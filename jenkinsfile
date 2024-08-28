@@ -5,36 +5,43 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building...'
+                // Example: mvn clean package
             }
         }
         stage('Unit and Integration Tests') {
             steps {
                 echo 'Running Unit and Integration Tests...'
+                // Example: mvn test
             }
         }
         stage('Code Analysis') {
             steps {
                 echo 'Performing Code Analysis...'
+                // Example: mvn sonar:sonar
             }
         }
         stage('Security Scan') {
             steps {
                 echo 'Running Security Scan...'
+                // Example: dependency-check.sh
             }
         }
         stage('Deploy to Staging') {
             steps {
                 echo 'Deploying to Staging...'
+                // Example: deploy script to staging environment
             }
         }
         stage('Integration Tests on Staging') {
             steps {
                 echo 'Running Integration Tests on Staging...'
+                // Example: run integration tests on staging
             }
         }
         stage('Deploy to Production') {
             steps {
                 echo 'Deploying to Production...'
+                // Example: deploy script to production environment
             }
         }
     }
@@ -46,18 +53,14 @@ pipeline {
         success {
             mail to: 'asgaurav9@gmail.com',
                  subject: "Jenkins Pipeline - ${currentBuild.fullDisplayName} Success",
-                 body: """The pipeline completed successfully.
-
-                 You can view the full console output at: ${env.BUILD_URL}console""",
-                 mimeType: 'text/html'
+                 body: "The pipeline completed successfully.",
+               
         }
         failure {
             mail to: 'asgaurav9@gmail.com',
                  subject: "Jenkins Pipeline - ${currentBuild.fullDisplayName} Failed",
-                 body: """The pipeline failed.
-
-                 You can view the full console output at: ${env.BUILD_URL}console""",
-                 mimeType: 'text/html'
+                 body: "The pipeline failed. Please check the logs.",
+                
         }
     }
 }
