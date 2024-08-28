@@ -62,14 +62,47 @@ pipeline {
     }
 
     post {
-        always {
-            echo 'Pipeline completed.'
+    always {
+        echo 'Pipeline completed.'
+    }
+    success {
+        echo 'Pipeline succeeded!'
+    }
+    failure {
+        echo 'Pipeline failed.'
+    }
+    stage('Unit and Integration Tests') {
+        steps {
+            echo 'Running Unit and Integration Tests...'
+            // Unit Test Tool: JUnit
+            sh 'mvn test'
         }
-        success {
-            echo 'Pipeline succeeded!'
+        post {
+            always {
+                emailext(
+                    subject: "Unit and Integration Test Results: ${currentBuild.currentResult}",
+                    body: "Please find the attached test logs.",
+                    to: 'your-email@example.com',
+                    attachLog: true
+                )
+            }
         }
-        failure {
-            echo 'Pipeline failed.'
+    }
+    stage('Security Scan') {
+        steps {
+            echo 'Performing Security Scan...'
+            // Security Scan Tool: OWASP Dependency Check
+            sh 'mvn org.owasp:dependency-check-maven:check'
+        }
+        post {
+            always {
+                emailext(
+                    subject: "Security Scan Results: ${currentBuild.currentResult}",
+                    body: "Please find the attached security scan logs.",
+                    to: 'your-email@example.com',
+                    attachLog: true
+                )
+            }
         }
     }
 }
