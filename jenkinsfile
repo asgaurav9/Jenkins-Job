@@ -43,7 +43,7 @@ pipeline {
             echo 'Pipeline Completed'
         }
         success {
-            mail to: 'your-email@gmail.com,asgaurav9@gmail.com',
+            mail to: 'asgaurav9@gmail.com',
                  subject: "Jenkins Pipeline - ${currentBuild.fullDisplayName} Success",
                  body: """The pipeline completed successfully.
 
@@ -51,7 +51,7 @@ pipeline {
                  mimeType: 'text/html'
         }
         failure {
-            mail to: 'your-email@gmail.com,asgaurav9@gmail.com',
+            mail to: 'asgaurav9@gmail.com',
                  subject: "Jenkins Pipeline - ${currentBuild.fullDisplayName} Failed",
                  body: """The pipeline failed.
 
