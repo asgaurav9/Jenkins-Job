@@ -5,36 +5,43 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building...'
+                // Example: mvn clean package
             }
         }
         stage('Unit and Integration Tests') {
             steps {
                 echo 'Running Unit and Integration Tests...'
+                // Example: mvn test
             }
         }
         stage('Code Analysis') {
             steps {
                 echo 'Performing Code Analysis...'
+                // Example: mvn sonar:sonar
             }
         }
         stage('Security Scan') {
             steps {
                 echo 'Running Security Scan...'
+                // Example: dependency-check.sh
             }
         }
         stage('Deploy to Staging') {
             steps {
                 echo 'Deploying to Staging...'
+                // Example: deploy script to staging environment
             }
         }
         stage('Integration Tests on Staging') {
             steps {
                 echo 'Running Integration Tests on Staging...'
+                // Example: run integration tests on staging
             }
         }
         stage('Deploy to Production') {
             steps {
                 echo 'Deploying to Production...'
+                // Example: deploy script to production environment
             }
         }
     }
@@ -46,7 +53,7 @@ pipeline {
         success {
             mail to: 'your-email@example.com',
                  subject: "Jenkins Pipeline - ${currentBuild.fullDisplayName} Success",
-                 body: "The pipeline completed successfully. Logs are attached.",
+                 body: "The pipeline completed successfully.",
                  attachLog: true
         }
         failure {
