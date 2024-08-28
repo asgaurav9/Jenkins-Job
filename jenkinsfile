@@ -39,25 +39,4 @@ pipeline {
         }
     }
 
-    post {
-        always {
-            echo 'Pipeline Completed'
-        }
-        success {
-            mail to: 'asgaurav9@gmail.com',
-                 subject: "Jenkins Pipeline - ${currentBuild.fullDisplayName} Success",
-                 body: """The pipeline completed successfully.
-
-                 You can view the full console output at: ${env.BUILD_URL}console""",
-                 mimeType: 'text/html'
-        }
-        failure {
-            mail to: 'asgaurav9@gmail.com',
-                 subject: "Jenkins Pipeline - ${currentBuild.fullDisplayName} Failed",
-                 body: """The pipeline failed.
-
-                 You can view the full console output at: ${env.BUILD_URL}console""",
-                 mimeType: 'text/html'
-        }
-    }
-}
+    
