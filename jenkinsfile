@@ -1,62 +1,62 @@
 pipeline {
     agent any
-
     stages {
         stage('Build') {
             steps {
                 echo 'Building...'
+                // Add build steps here
             }
         }
         stage('Unit and Integration Tests') {
             steps {
                 echo 'Running Unit and Integration Tests...'
+                // Add test steps here
             }
         }
         stage('Code Analysis') {
             steps {
-                echo 'Performing Code Analysis...'
+                echo 'Analyzing Code...'
+                // Add code analysis steps here
             }
         }
         stage('Security Scan') {
             steps {
-                echo 'Running Security Scan...'
+                echo 'Performing Security Scan...'
+                // Add security scan steps here
             }
         }
         stage('Deploy to Staging') {
             steps {
                 echo 'Deploying to Staging...'
+                // Add deployment steps here
             }
         }
         stage('Integration Tests on Staging') {
             steps {
                 echo 'Running Integration Tests on Staging...'
+                // Add integration test steps here
             }
         }
         stage('Deploy to Production') {
             steps {
                 echo 'Deploying to Production...'
+                // Add production deployment steps here
             }
         }
     }
- post {
-        always {
-            echo 'Pipeline Completed'
-        }
+    post {
         success {
             mail to: 'asgaurav9@gmail.com',
-                 subject: "Jenkins Pipeline - ${currentBuild.fullDisplayName} Success",
-                 body: """The pipeline completed successfully.
-
-                 You can view the full console output at: ${env.BUILD_URL}console""",
-                 mimeType: 'text/html'
+                 subject: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                 body: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} was successful."
         }
         failure {
             mail to: 'asgaurav9@gmail.com',
-                 subject: "Jenkins Pipeline - ${currentBuild.fullDisplayName} Failed",
-                 body: """The pipeline failed.
-
-                 You can view the full console output at: ${env.BUILD_URL}console""",
-                 mimeType: 'text/html'
+                 subject: "FAILURE: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                 body: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} failed. Check Jenkins for details."
+        }
+        always {
+            echo 'Pipeline completed.'
         }
     }
 }
