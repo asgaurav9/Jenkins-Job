@@ -3,92 +3,71 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo 'Building...'
-                // Add build steps here
+                echo 'Building the application...'
+                // Use a build tool like Maven or Gradle
+                // For example, for Maven: sh 'mvn clean install'
+                echo 'Tool: Maven'
             }
         }
         stage('Unit and Integration Tests') {
             steps {
-                echo "Performing Unit Testing using JUnit..."
-                echo "Performing Integration Testing using Selenium WebDriver..."
-
-                script {
-                    def logFilePathNew = "${env.WORKSPACE}/test-output.log"
-                }
-
-                sh """
-                echo 'Starting unit testing using JUnit...' > ${logFilePathNew}
-                echo 'Testing the feature working...' >> ${logFilePathNew}
-                echo 'Unit testing completed and no issues found' >> ${logFilePathNew}
-                echo '\n\nStarting Integration testing using Selenium WebDriver...' >> ${logFilePathNew}
-                echo 'End to End Testing of the complete product working...' >> ${logFilePathNew}
-                echo 'Integration testing completed and no issues found' >> ${logFilePathNew}
-                """
-            }
-
-            post {
-                success {
-                    emailext (
-                        attachmentsPattern: 'test-output.log',
-                        body: 'The Unit Testing and Integration testing completed successfully',
-                        subject: 'Unit and Integration Testing Status: SUCCESS',
-                        to: 'asgaurav9@gmail.com'
-                    )
-                }
-                failure {
-                    emailext (
-                        attachmentsPattern: 'test-output.log',
-                        body: 'The Unit Testing and Integration testing completed unsuccessfully. Please check logs!',
-                        subject: 'Unit and Integration Testing Status: FAILURE',
-                        to: 'asgaurav9@gmail.com'
-                    )
-                }
+                echo 'Running Unit and Integration tests...'
+                // Example: use JUnit or TestNG
+                echo 'Tool: JUnit/TestNG'
             }
         }
         stage('Code Analysis') {
             steps {
-                echo 'Analyzing Code...'
-                // Add code analysis steps here
+                echo 'Performing static code analysis...'
+                // Example: SonarQube or PMD
+                echo 'Tool: SonarQube'
             }
         }
         stage('Security Scan') {
             steps {
-                echo 'Performing Security Scan...'
-                // Add security scan steps here
+                echo 'Performing security scan...'
+                // Example: OWASP Dependency-Check or Snyk
+                echo 'Tool: OWASP Dependency-Check'
             }
         }
         stage('Deploy to Staging') {
             steps {
-                echo 'Deploying to Staging...'
-                // Add deployment steps here
+                echo 'Deploying to staging environment...'
+                // Example: AWS EC2 or any other staging server
+                echo 'Deploying to Staging Server: AWS EC2'
             }
         }
         stage('Integration Tests on Staging') {
             steps {
-                echo 'Running Integration Tests on Staging...'
-                // Add integration test steps here
+                echo 'Running integration tests on staging...'
+                // Similar to earlier integration tests but on staging environment
+                echo 'Tool: JUnit/TestNG on Staging'
             }
         }
         stage('Deploy to Production') {
             steps {
-                echo 'Deploying to Production...'
-                // Add production deployment steps here
+                echo 'Deploying to production environment...'
+                // Example: AWS EC2 or any production environment
+                echo 'Deploying to Production Server: AWS EC2'
             }
         }
     }
     post {
+        always {
+            echo 'Pipeline finished.'
+        }
         success {
             mail to: 'asgaurav9@gmail.com',
-                 subject: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-                 body: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} was successful."
+                 subject: "Pipeline Succeeded: ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
+                 body: "The pipeline has completed successfully.",
+                 attachLog: true
         }
         failure {
             mail to: 'asgaurav9@gmail.com',
-                 subject: "FAILURE: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-                 body: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} failed. Check Jenkins for details."
-        }
-        always {
-            echo 'Pipeline completed.'
+                 subject: "Pipeline Failed: ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
+                 body: "The pipeline has failed. Please review the logs.",
+                 attachLog: true
         }
     }
 }
+
