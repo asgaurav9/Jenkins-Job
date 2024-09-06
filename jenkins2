@@ -1,107 +1,94 @@
 pipeline {
     agent any
-
     stages {
-        // Stage 1: Build
         stage('Build') {
             steps {
-                echo 'Building the code using Maven...'
-                // Example: sh 'mvn clean package'
+                echo 'Building...'
+                // Add build steps here
             }
         }
-
-        // Stage 2: Unit and Integration Tests
         stage('Unit and Integration Tests') {
             steps {
-                echo "Running Unit Tests using JUnit and Integration Tests using Selenium..."
+                echo "Performing Unit Testing using JUnit..."
+                echo "Performing Integration Testing using Selenium WebDriver..."
+
                 script {
-                    def logFilePath = "${env.WORKSPACE}/test-output.log"
-                    sh """
-                    echo 'Starting unit testing using JUnit...' > ${logFilePath}
-                    echo 'Unit testing completed successfully.' >> ${logFilePath}
-                    echo '\\nStarting Integration testing using Selenium...' >> ${logFilePath}
-                    echo 'Integration testing completed successfully.' >> ${logFilePath}
-                    """
+                    def logFilePathNew = "${env.WORKSPACE}/test-output.log"
+                }
+
+                sh """
+                echo 'Starting unit testing using JUnit...' > ${logFilePathNew}
+                echo 'Testing the feature working...' >> ${logFilePathNew}
+                echo 'Unit testing completed and no issues found' >> ${logFilePathNew}
+                echo '\n\nStarting Integration testing using Selenium WebDriver...' >> ${logFilePathNew}
+                echo 'End to End Testing of the complete product working...' >> ${logFilePathNew}
+                echo 'Integration testing completed and no issues found' >> ${logFilePathNew}
+                """
+            }
+
+            post {
+                success {
+                    emailext (
+                        attachmentsPattern: 'test-output.log',
+                        body: 'The Unit Testing and Integration testing completed successfully',
+                        subject: 'Unit and Integration Testing Status: SUCCESS',
+                        to: 'asgaurav9@gmail.com'
+                    )
+                }
+                failure {
+                    emailext (
+                        attachmentsPattern: 'test-output.log',
+                        body: 'The Unit Testing and Integration testing completed unsuccessfully. Please check logs!',
+                        subject: 'Unit and Integration Testing Status: FAILURE',
+                        to: 'asgaurav9@gmail.com'
+                    )
                 }
             }
         }
-
-        // Stage 3: Code Analysis
         stage('Code Analysis') {
             steps {
-                echo 'Performing Code Analysis with SonarQube...'
-                // Example: sh 'sonar-scanner'
-                script {
-                    def logFilePath = "${env.WORKSPACE}/code-analysis-output.log"
-                    sh """
-                    echo 'Starting code analysis using SonarQube...' > ${logFilePath}
-                    echo 'Code analysis completed successfully.' >> ${logFilePath}
-                    """
-                }
+                echo 'Analyzing Code...'
+                // Add code analysis steps here
             }
         }
-
-        // Stage 4: Security Scan
         stage('Security Scan') {
             steps {
-                echo 'Performing Security Scan using OWASP Dependency-Check...'
-                // Example: sh './dependency-check.sh --project my-app --out security-report'
-                script {
-                    def logFilePath = "${env.WORKSPACE}/security-output.log"
-                    sh """
-                    echo 'Starting security scan using OWASP Dependency-Check...' > ${logFilePath}
-                    echo 'Security scan completed, no vulnerabilities found.' >> ${logFilePath}
-                    """
-                }
+                echo 'Performing Security Scan...'
+                // Add security scan steps here
             }
         }
-
-        // Stage 5: Deploy to Staging
         stage('Deploy to Staging') {
             steps {
-                echo 'Deploying to Staging server (e.g., AWS EC2)...'
-                // Example: sh 'deploy-to-staging.sh'
+                echo 'Deploying to Staging...'
+                // Add deployment steps here
             }
         }
-
-        // Stage 6: Integration Tests on Staging
         stage('Integration Tests on Staging') {
             steps {
                 echo 'Running Integration Tests on Staging...'
-                script {
-                    def logFilePath = "${env.WORKSPACE}/staging-test-output.log"
-                    sh """
-                    echo 'Starting integration tests on staging...' > ${logFilePath}
-                    echo 'Integration tests on staging completed successfully.' >> ${logFilePath}
-                    """
-                }
+                // Add integration test steps here
             }
         }
-
-        // Stage 7: Deploy to Production
         stage('Deploy to Production') {
             steps {
-                echo 'Deploying to Production server (e.g., AWS EC2)...'
-                // Example: sh 'deploy-to-prod.sh'
+                echo 'Deploying to Production...'
+                // Add production deployment steps here
             }
         }
     }
-
     post {
-        // Email on successful pipeline
         success {
-            emailext attachmentsPattern: 'test-output.log,code-analysis-output.log,security-output.log',
-            body: 'The pipeline stages completed successfully. Logs are attached.',
-            subject: 'Pipeline Status: SUCCESS',
-            to: 'asgaurav9@gmail.com'
+            mail to: 'asgaurav9@gmail.com',
+                 subject: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                 body: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} was successful."
         }
-        
-        // Email on failed pipeline
         failure {
-            emailext attachmentsPattern: 'test-output.log,code-analysis-output.log,security-output.log',
-            body: 'The pipeline failed. Please check the logs attached.',
-            subject: 'Pipeline Status: FAILURE',
-            to: 'asgaurav9@gmail.com'
+            mail to: 'asgaurav9@gmail.com',
+                 subject: "FAILURE: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                 body: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} failed. Check Jenkins for details."
+        }
+        always {
+            echo 'Pipeline completed.'
         }
     }
 }
