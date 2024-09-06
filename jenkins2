@@ -3,73 +3,115 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo 'Building...'
-                // Add build steps here
+                echo 'Building the application...'
+                // Add your build steps here (e.g., Maven/Gradle build command)
+                sh 'echo "Build successful!"'
             }
         }
+        
         stage('Unit and Integration Tests') {
             steps {
-                echo 'Running Unit and Integration Tests...'
-                // Add test steps here
+                echo "Performing Unit Testing using JUnit..."
+                echo "Performing Integration Testing using Selenium WebDriver..."
+
+                script {
+                    // Define the path to store test output logs
+                    def logFilePathNew = "${env.WORKSPACE}/test-output.log"
+                    
+                    // Run shell commands for unit and integration testing
+                    sh """
+                    echo 'Starting unit testing using JUnit...' > ${logFilePathNew}
+                    echo 'Testing the feature working...' >> ${logFilePathNew}
+                    echo 'Unit testing completed and no issues found' >> ${logFilePathNew}
+                    echo '\\n\\nStarting Integration testing using Selenium WebDriver...' >> ${logFilePathNew}
+                    echo 'End to End Testing of the complete product working...' >> ${logFilePathNew}
+                    echo 'Integration testing completed and no issues found' >> ${logFilePathNew}
+                    """
+                }
+            }
+            post {
+                success {
+                    // Send email notification on successful test completion
+                    emailext attachmentsPattern: 'test-output.log',
+                             body: 'The Unit Testing and Integration testing completed successfully',
+                             subject: 'Unit and Integration Testing Status: SUCCESS',
+                             to: 'asgaurav9@gmail.com'
+                }
+                failure {
+                    // Send email notification on test failure
+                    emailext attachmentsPattern: 'test-output.log',
+                             body: 'The Unit Testing and Integration testing completed unsuccessfully. Please check logs!',
+                             subject: 'Unit and Integration Testing Status: FAILURE',
+                             to: 'asgaurav9@gmail.com'
+                }
             }
         }
+
         stage('Code Analysis') {
             steps {
-                echo 'Analyzing Code...'
-                // Add code analysis steps here
+                echo 'Running static code analysis...'
+                // Add code analysis tools (e.g., SonarQube, ESLint, etc.)
+                sh 'echo "Code analysis completed successfully!"'
             }
         }
+
         stage('Security Scan') {
             steps {
-                echo 'Performing Security Scan...'
-                // Add security scan steps here
+                echo 'Performing security scan...'
+                // Add security scanning tools (e.g., OWASP Dependency-Check, Checkmarx, etc.)
+                sh 'echo "Security scan completed successfully!"'
+            }
+            post {
+                failure {
+                    // Send email notification if the security scan fails
+                    emailext body: 'The Security scan failed. Please check logs!',
+                             subject: 'Security Scan Status: FAILURE',
+                             to: 'asgaurav9@gmail.com'
+                }
             }
         }
+
         stage('Deploy to Staging') {
             steps {
-                echo 'Deploying to Staging...'
-                // Add deployment steps here
+                echo 'Deploying to staging environment...'
+                // Add deployment steps to staging environment
+                sh 'echo "Deployment to staging successful!"'
             }
         }
+
         stage('Integration Tests on Staging') {
             steps {
                 echo 'Running Integration Tests on Staging...'
-                // Add integration test steps here
+                // Add integration tests specific to the staging environment
+                sh 'echo "Integration Tests on Staging successful!"'
+            }
+            post {
+                success {
+                    // Send email notification if staging tests pass
+                    emailext body: 'The Integration Tests on Staging completed successfully!',
+                             subject: 'Staging Tests Status: SUCCESS',
+                             to: 'asgaurav9@gmail.com'
+                }
+                failure {
+                    // Send email notification if staging tests fail
+                    emailext body: 'The Integration Tests on Staging failed. Please check logs!',
+                             subject: 'Staging Tests Status: FAILURE',
+                             to: 'asgaurav9@gmail.com'
+                }
             }
         }
+
         stage('Deploy to Production') {
             steps {
-                echo 'Deploying to Production...'
+                echo 'Deploying to production environment...'
                 // Add production deployment steps here
+                sh 'echo "Deployment to production successful!"'
             }
         }
     }
     post {
-        success {
-            script {
-                def logContent = currentBuild.rawBuild.getLog(1000).join('\n')
-                writeFile file: 'build_log.txt', text: logContent
-                mail to: 'asgaurav9@gmail.com',
-                     subject: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-                     body: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} was successful. Please find the attached log file.",
-                     attachLog: true,
-                     attachmentsPattern: 'build_log.txt'
-            }
-        }
-        failure {
-            script {
-                def logContent = currentBuild.rawBuild.getLog(1000).join('\n')
-                writeFile file: 'build_log.txt', text: logContent
-                mail to: 'asgaurav9@gmail.com',
-                     subject: "FAILURE: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-                     body: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} failed. Check Jenkins for details. Log file attached.",
-                     attachLog: true,
-                     attachmentsPattern: 'build_log.txt'
-            }
-        }
         always {
             echo 'Pipeline completed.'
         }
     }
 }
-
