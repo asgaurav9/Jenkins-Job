@@ -46,30 +46,17 @@ pipeline {
     }
     post {
         success {
-            archiveArtifacts artifacts: '**/build-log.txt', allowEmptyArchive: true
-            script {
-                def logFile = "${env.WORKSPACE}/build-log.txt"
-                writeFile file: logFile, text: currentBuild.rawBuild.getLog(1000).join("\n")
-                mail to: 'asgaurav9@gmail.com',
-                     subject: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-                     body: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} was successful.",
-                     attachmentsPattern: logFile
-            }
+            mail to: 'asgaurav9@gmail.com',
+                 subject: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                 body: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} was successful."
         }
         failure {
-            archiveArtifacts artifacts: '**/build-log.txt', allowEmptyArchive: true
-            script {
-                def logFile = "${env.WORKSPACE}/build-log.txt"
-                writeFile file: logFile, text: currentBuild.rawBuild.getLog(1000).join("\n")
-                mail to: 'asgaurav9@gmail.com',
-                     subject: "FAILURE: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-                     body: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} failed. Check attached logs for details.",
-                     attachmentsPattern: logFile
-            }
+            mail to: 'asgaurav9@gmail.com',
+                 subject: "FAILURE: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                 body: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} failed. Check Jenkins for details."
         }
         always {
             echo 'Pipeline completed.'
         }
     }
 }
-
