@@ -45,8 +45,7 @@ pipeline {
         }
     }
     post {
-         always {
-              success {
+        success {
                   emailext (
                 to: 'asgaurav9@gmail.com',
                 subject: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
@@ -64,7 +63,6 @@ pipeline {
                 attachLog: true
             )
         }
-}
         always {
             echo 'Pipeline completed.'
         }
