@@ -46,14 +46,26 @@ pipeline {
     }
     post {
         success {
-            mail to: 'asgaurav9@gmail.com',
-                 subject: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-                 body: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} was successful."
+            script {
+                def logContent = currentBuild.rawBuild.getLog(1000).join('\n')
+                writeFile file: 'build_log.txt', text: logContent
+                mail to: 'asgaurav9@gmail.com',
+                     subject: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                     body: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} was successful. Please find the attached log file.",
+                     attachLog: true,
+                     attachmentsPattern: 'build_log.txt'
+            }
         }
         failure {
-            mail to: 'asgaurav9@gmail.com',
-                 subject: "FAILURE: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-                 body: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} failed. Check Jenkins for details."
+            script {
+                def logContent = currentBuild.rawBuild.getLog(1000).join('\n')
+                writeFile file: 'build_log.txt', text: logContent
+                mail to: 'asgaurav9@gmail.com',
+                     subject: "FAILURE: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                     body: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} failed. Check Jenkins for details. Log file attached.",
+                     attachLog: true,
+                     attachmentsPattern: 'build_log.txt'
+            }
         }
         always {
             echo 'Pipeline completed.'
