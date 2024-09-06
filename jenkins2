@@ -46,14 +46,24 @@ pipeline {
     }
     post {
         success {
-            mail to: 'asgaurav9@gmail.com',
-                 subject: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-                 body: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} was successful."
+            script {
+                def logFile = "${env.WORKSPACE}/build-log-${env.BUILD_NUMBER}.txt"
+                sh "cat ${env.WORKSPACE}/pipeline.log > ${logFile}" // Capture the logs in a file
+                mail to: 'asgaurav9@gmail.com',
+                     subject: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                     body: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} was successful.",
+                     attachmentsPattern: "${logFile}"
+            }
         }
         failure {
-            mail to: 'asgaurav9@gmail.com',
-                 subject: "FAILURE: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-                 body: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} failed. Check Jenkins for details."
+            script {
+                def logFile = "${env.WORKSPACE}/build-log-${env.BUILD_NUMBER}.txt"
+                sh "cat ${env.WORKSPACE}/pipeline.log > ${logFile}" // Capture the logs in a file
+                mail to: 'asgaurav9@gmail.com',
+                     subject: "FAILURE: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                     body: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} failed. Check attached logs for details.",
+                     attachmentsPattern: "${logFile}"
+            }
         }
         always {
             echo 'Pipeline completed.'
