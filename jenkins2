@@ -1,140 +1,70 @@
 pipeline {
     agent any
     stages {
-        // Build Stage
         stage('Build') {
             steps {
-                script {
-                    def buildLogPath = "${env.WORKSPACE}/build-output.log"
-                }
-
-                sh """
-                echo 'Starting the build process...' > ${buildLogPath}
-                echo 'Compiling source code...' >> ${buildLogPath}
-                # Example build step: If using Maven, run the Maven build command
-                echo 'Running Maven build...' >> ${buildLogPath}
-                mvn clean install >> ${buildLogPath}
-                echo 'Build completed successfully!' >> ${buildLogPath}
-                """
-            }
-            post {
-                success {
-                    emailext attachmentsPattern: 'build-output.log',
-                             body: 'Build completed successfully. Please find the attached log.',
-                             subject: 'Build Status: SUCCESS',
-                             to: 'asgaurav9@gmail.com'
-                }
-                failure {
-                    emailext attachmentsPattern: 'build-output.log',
-                             body: 'Build failed. Please check the attached log for details.',
-                             subject: 'Build Status: FAILURE',
-                             to: 'asgaurav9@gmail.com'
-                }
+                echo 'Building...'
+                // Add build steps here
             }
         }
-
-        // Unit and Integration Tests Stage
         stage('Unit and Integration Tests') {
             steps {
-                script {
-                    def logFilePathNew = "${env.WORKSPACE}/test-output.log"
-                }
-
-                sh """
-                echo 'Starting unit testing using JUnit...' > ${logFilePathNew}
-                echo 'Testing the feature working...' >> ${logFilePathNew}
-                echo 'Unit testing completed and no issues found' >> ${logFilePathNew}
-                echo '\\n\\nStarting Integration testing using Selenium WebDriver...' >> ${logFilePathNew}
-                echo 'End to End Testing of the complete product working...' >> ${logFilePathNew}
-                echo 'Integration testing completed and no issues found' >> ${logFilePathNew}
-                """
-            }
-            post {
-                success {
-                    emailext attachmentsPattern: 'test-output.log',
-                             body: 'The Unit Testing and Integration testing completed successfully',
-                             subject: 'Unit and Integration Testing Status: SUCCESS',
-                             to: 'asgaurav9@gmail.com'
-                }
-                failure {
-                    emailext attachmentsPattern: 'test-output.log',
-                             body: 'The Unit Testing and Integration testing completed unsuccessfully. Please check logs!',
-                             subject: 'Unit and Integration Testing Status: FAILURE',
-                             to: 'asgaurav9@gmail.com'
-                }
+                echo 'Running Unit and Integration Tests...'
+                // Add test steps here
             }
         }
-
-        // Code Analysis Stage
         stage('Code Analysis') {
             steps {
-                echo 'Running static code analysis...'
-                // Add code analysis tools (e.g., SonarQube, ESLint, etc.)
-                sh 'echo "Code analysis completed successfully!"'
+                echo 'Analyzing Code...'
+                // Add code analysis steps here
             }
         }
-
-        // Security Scan Stage
         stage('Security Scan') {
             steps {
-                echo 'Performing security scan...'
-                // Add security scanning tools (e.g., OWASP Dependency-Check, Checkmarx, etc.)
-                sh 'echo "Security scan completed successfully!"'
-            }
-            post {
-                failure {
-                    // Send email notification if the security scan fails
-                    emailext body: 'The Security scan failed. Please check logs!',
-                             subject: 'Security Scan Status: FAILURE',
-                             to: 'asgaurav9@gmail.com'
-                }
+                echo 'Performing Security Scan...'
+                // Add security scan steps here
             }
         }
-
-        // Deploy to Staging Stage
         stage('Deploy to Staging') {
             steps {
-                echo 'Deploying to staging environment...'
-                // Add deployment steps to staging environment
-                sh 'echo "Deployment to staging successful!"'
+                echo 'Deploying to Staging...'
+                // Add deployment steps here
             }
         }
-
-        // Integration Tests on Staging Stage
         stage('Integration Tests on Staging') {
             steps {
                 echo 'Running Integration Tests on Staging...'
-                // Add integration tests specific to the staging environment
-                sh 'echo "Integration Tests on Staging successful!"'
-            }
-            post {
-                success {
-                    // Send email notification if staging tests pass
-                    emailext body: 'The Integration Tests on Staging completed successfully!',
-                             subject: 'Staging Tests Status: SUCCESS',
-                             to: 'asgaurav9@gmail.com'
-                }
-                failure {
-                    // Send email notification if staging tests fail
-                    emailext body: 'The Integration Tests on Staging failed. Please check logs!',
-                             subject: 'Staging Tests Status: FAILURE',
-                             to: 'asgaurav9@gmail.com'
-                }
+                // Add integration test steps here
             }
         }
-
-        // Deploy to Production Stage
         stage('Deploy to Production') {
             steps {
-                echo 'Deploying to production environment...'
+                echo 'Deploying to Production...'
                 // Add production deployment steps here
-                sh 'echo "Deployment to production successful!"'
             }
         }
     }
+
     post {
+        success {
+            emailext (
+                attachmentsPattern: 'test-output.log',
+                body: 'The Unit Testing and Integration testing completed successfully',
+                subject: 'Unit and Integration Testing Status: SUCCESS',
+                to: 'asgaurav9@gmail.com'
+            )
+        }
+        failure {
+            emailext (
+                attachmentsPattern: 'test-output.log',
+                body: 'The Unit Testing and Integration testing completed unsuccessfully. Please check logs!',
+                subject: 'Unit and Integration Testing Status: FAILURE',
+                to: 'asgaurav9@gmail.com'
+            )
+        }
         always {
             echo 'Pipeline completed.'
         }
     }
 }
+
