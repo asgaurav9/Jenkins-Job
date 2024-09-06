@@ -49,8 +49,8 @@ pipeline {
             emailext (
                 to: 'asgaurav9@gmail.com',
                 subject: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-                body: """<p>Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} was successful.</p>
-                         <p>Check the attached log for more details.</p>""",
+                body: """Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} was successful.
+                         Check the attached log for more details.""",
                 attachLog: true
             )
         }
@@ -58,8 +58,8 @@ pipeline {
             emailext (
                 to: 'asgaurav9@gmail.com',
                 subject: "FAILURE: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-                body: """<p>Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} failed.</p>
-                         <p>Check the attached log for more details.</p>""",
+                body: """Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} failed.
+                         Check the attached log for more details.""",
                 attachLog: true
             )
         }
