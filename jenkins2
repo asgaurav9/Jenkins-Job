@@ -1,120 +1,67 @@
 pipeline {
     agent any
-
     stages {
         stage('Build') {
             steps {
-                script {
-                    def logFilePath = "${env.WORKSPACE}/pipeline-log.log"
-                    sh """
-                    echo 'Starting Build Stage...' > ${logFilePath}
-                    echo 'Building project...' >> ${logFilePath}
-                    # Add your build commands here
-                    echo 'Build completed.' >> ${logFilePath}
-                    """
-                }
+                echo 'Building...'
+                // Add build steps here
             }
         }
         stage('Unit and Integration Tests') {
             steps {
-                script {
-                    def logFilePath = "${env.WORKSPACE}/pipeline-log.log"
-                    sh """
-                    echo 'Starting Unit and Integration Tests Stage...' >> ${logFilePath}
-                    echo 'Performing Unit Testing using JUnit...' >> ${logFilePath}
-                    echo 'Performing Integration Testing using Selenium WebDriver...' >> ${logFilePath}
-                    # Add your test commands here
-                    echo 'Unit and Integration Tests completed.' >> ${logFilePath}
-                    """
-                }
+                echo 'Running Unit and Integration Tests...'
+                // Add test steps here
             }
         }
         stage('Code Analysis') {
             steps {
-                script {
-                    def logFilePath = "${env.WORKSPACE}/pipeline-log.log"
-                    sh """
-                    echo 'Starting Code Analysis Stage...' >> ${logFilePath}
-                    echo 'Analyzing code...' >> ${logFilePath}
-                    # Add your code analysis commands here
-                    echo 'Code analysis completed.' >> ${logFilePath}
-                    """
-                }
+                echo 'Analyzing Code...'
+                // Add code analysis steps here
             }
         }
         stage('Security Scan') {
             steps {
-                script {
-                    def logFilePath = "${env.WORKSPACE}/pipeline-log.log"
-                    sh """
-                    echo 'Starting Security Scan Stage...' >> ${logFilePath}
-                    echo 'Performing security scan...' >> ${logFilePath}
-                    # Add your security scan commands here
-                    echo 'Security scan completed.' >> ${logFilePath}
-                    """
-                }
+                echo 'Performing Security Scan...'
+                // Add security scan steps here
             }
         }
         stage('Deploy to Staging') {
             steps {
-                script {
-                    def logFilePath = "${env.WORKSPACE}/pipeline-log.log"
-                    sh """
-                    echo 'Starting Deployment to Staging Stage...' >> ${logFilePath}
-                    echo 'Deploying to staging environment...' >> ${logFilePath}
-                    # Add your deployment commands here
-                    echo 'Deployment to staging completed.' >> ${logFilePath}
-                    """
-                }
+                echo 'Deploying to Staging...'
+                // Add deployment steps here
             }
         }
         stage('Integration Tests on Staging') {
             steps {
-                script {
-                    def logFilePath = "${env.WORKSPACE}/pipeline-log.log"
-                    sh """
-                    echo 'Starting Integration Tests on Staging Stage...' >> ${logFilePath}
-                    echo 'Running integration tests on staging...' >> ${logFilePath}
-                    # Add your integration test commands here
-                    echo 'Integration tests on staging completed.' >> ${logFilePath}
-                    """
-                }
+                echo 'Running Integration Tests on Staging...'
+                // Add integration test steps here
             }
         }
         stage('Deploy to Production') {
             steps {
-                script {
-                    def logFilePath = "${env.WORKSPACE}/pipeline-log.log"
-                    sh """
-                    echo 'Starting Deployment to Production Stage...' >> ${logFilePath}
-                    echo 'Deploying to production environment...' >> ${logFilePath}
-                    # Add your production deployment commands here
-                    echo 'Deployment to production completed.' >> ${logFilePath}
-                    """
-                }
+                echo 'Deploying to Production...'
+                // Add production deployment steps here
             }
         }
     }
     post {
         success {
-            emailext attachmentsPattern: 'pipeline-log.log',
-                     body: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} was successful.\n\nThe pipeline completed successfully. Please find the attached log file.",
-                     subject: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-                     to: 'asgaurav9@gmail.com'
+            emailext(
+                to: 'asgaurav9@gmail.com',
+                subject: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                body: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} was successful.",
+                attachmentsPattern: "https://mail.google.com/mail/u/0/#inbox/attach.txt" 
+            )
         }
         failure {
-            emailext attachmentsPattern: 'pipeline-log.log',
-                     body: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} failed. Please check the attached log file for details.",
-                     subject: "FAILURE: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-                     to: 'asgaurav9@gmail.com'
+            emailext(
+                to: 'asgaurav9@gmail.com',
+                subject: "FAILURE: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                body: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} failed. Check Jenkins for details.",
+                attachmentsPattern: "https://mail.google.com/mail/u/0/#inbox/attach.txt"
+            )
         }
         always {
-            script {
-                def logFilePath = "${env.WORKSPACE}/pipeline-log.log"
-                sh """
-                echo 'Pipeline completed.' >> ${logFilePath}
-                """
-            }
             echo 'Pipeline completed.'
         }
     }
