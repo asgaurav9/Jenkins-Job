@@ -4,75 +4,71 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building...'
-                // Add build steps here
+                script {
+                    sh 'echo "Building..." >> build_log.txt'
+                    // Add actual build commands here
+                    sh 'echo "Build completed" >> build_log.txt'
+                }
             }
         }
         stage('Unit and Integration Tests') {
             steps {
-                echo "Performing Unit Testing using JUnit..."
-                echo "Performing Integration Testing using Selenium WebDriver..."
-
+                echo 'Running Unit and Integration Tests...'
                 script {
-                    def logFilePathNew = "${env.WORKSPACE}/test-output.log"
-                    
-                    // Writing logs to the file
-                    sh """
-                    echo 'Starting unit testing using JUnit...' > ${logFilePathNew}
-                    echo 'Testing the feature working...' >> ${logFilePathNew}
-                    echo 'Unit testing completed and no issues found' >> ${logFilePathNew}
-                    echo '\n\nStarting Integration testing using Selenium WebDriver...' >> ${logFilePathNew}
-                    echo 'End to End Testing of the complete product working...' >> ${logFilePathNew}
-                    echo 'Integration testing completed and no issues found' >> ${logFilePathNew}
-                    """
-                }
-            }
-            post {
-                success {
-                    emailext (
-                        attachmentsPattern: 'test-output.log',
-                        body: 'The Unit Testing and Integration testing completed successfully',
-                        subject: 'Unit and Integration Testing Status: SUCCESS',
-                        to: 'asgaurav9@gmail.com'
-                    )
-                }
-                failure {
-                    emailext (
-                        attachmentsPattern: 'test-output.log',
-                        body: 'The Unit Testing and Integration testing completed unsuccessfully. Please check logs!',
-                        subject: 'Unit and Integration Testing Status: FAILURE',
-                        to: 'asgaurav9@gmail.com'
-                    )
+                    sh 'echo "Running Unit and Integration Tests..." >> build_log.txt'
+                    // Add test steps here
+                    sh 'echo "Tests completed" >> build_log.txt'
                 }
             }
         }
         stage('Code Analysis') {
             steps {
                 echo 'Analyzing Code...'
-                // Add code analysis steps here
+                script {
+                    sh 'echo "Analyzing Code..." >> build_log.txt'
+                    // Add code analysis steps here
+                    sh 'echo "Code analysis completed" >> build_log.txt'
+                }
             }
         }
         stage('Security Scan') {
             steps {
                 echo 'Performing Security Scan...'
-                // Add security scan steps here
+                script {
+                    sh 'echo "Performing Security Scan..." >> build_log.txt'
+                    // Add security scan steps here
+                    sh 'echo "Security scan completed" >> build_log.txt'
+                }
             }
         }
         stage('Deploy to Staging') {
             steps {
                 echo 'Deploying to Staging...'
-                // Add deployment steps here
+                script {
+                    sh 'echo "Deploying to Staging..." >> build_log.txt'
+                    // Add deployment steps here
+                    sh 'echo "Deployment to staging completed" >> build_log.txt'
+                }
             }
         }
         stage('Integration Tests on Staging') {
             steps {
                 echo 'Running Integration Tests on Staging...'
-                // Add integration test steps here
+                script {
+                    sh 'echo "Running Integration Tests on Staging..." >> build_log.txt'
+                    // Add integration test steps here
+                    sh 'echo "Integration tests completed" >> build_log.txt'
+                }
             }
         }
         stage('Deploy to Production') {
             steps {
                 echo 'Deploying to Production...'
-                // Add production deployment steps here
+                script {
+                    sh 'echo "Deploying to Production..." >> build_log.txt'
+                    // Add production deployment steps here
+                    sh 'echo "Deployment to production completed" >> build_log.txt'
+                }
             }
         }
     }
@@ -80,15 +76,18 @@ pipeline {
         success {
             mail to: 'asgaurav9@gmail.com',
                  subject: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-                 body: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} was successful."
+                 body: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} was successful. Logs are available in build_log.txt.",
+                 attachmentsPattern: 'build_log.txt'
         }
         failure {
             mail to: 'asgaurav9@gmail.com',
                  subject: "FAILURE: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-                 body: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} failed. Check Jenkins for details."
+                 body: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} failed. Check Jenkins and build_log.txt for details.",
+                 attachmentsPattern: 'build_log.txt'
         }
         always {
             echo 'Pipeline completed.'
+            sh 'echo "Pipeline completed" >> build_log.txt'
         }
     }
 }
