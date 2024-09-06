@@ -3,70 +3,60 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo 'Building the application...'
-                // Use a build tool like Maven or Gradle
-                // For example, for Maven: sh 'mvn clean install'
-                echo 'Tool: Maven'
+                echo 'Building...'
+                // Add build steps here
             }
         }
         stage('Unit and Integration Tests') {
             steps {
-                echo 'Running Unit and Integration tests...'
-                // Example: use JUnit or TestNG
-                echo 'Tool: JUnit/TestNG'
+                echo 'Running Unit and Integration Tests...'
+                // Add test steps here
             }
         }
         stage('Code Analysis') {
             steps {
-                echo 'Performing static code analysis...'
-                // Example: SonarQube or PMD
-                echo 'Tool: SonarQube'
+                echo 'Analyzing Code...'
+                // Add code analysis steps here
             }
         }
         stage('Security Scan') {
             steps {
-                echo 'Performing security scan...'
-                // Example: OWASP Dependency-Check or Snyk
-                echo 'Tool: OWASP Dependency-Check'
+                echo 'Performing Security Scan...'
+                // Add security scan steps here
             }
         }
         stage('Deploy to Staging') {
             steps {
-                echo 'Deploying to staging environment...'
-                // Example: AWS EC2 or any other staging server
-                echo 'Deploying to Staging Server: AWS EC2'
+                echo 'Deploying to Staging...'
+                // Add deployment steps here
             }
         }
         stage('Integration Tests on Staging') {
             steps {
-                echo 'Running integration tests on staging...'
-                // Similar to earlier integration tests but on staging environment
-                echo 'Tool: JUnit/TestNG on Staging'
+                echo 'Running Integration Tests on Staging...'
+                // Add integration test steps here
             }
         }
         stage('Deploy to Production') {
             steps {
-                echo 'Deploying to production environment...'
-                // Example: AWS EC2 or any production environment
-                echo 'Deploying to Production Server: AWS EC2'
+                echo 'Deploying to Production...'
+                // Add production deployment steps here
             }
         }
     }
     post {
-        always {
-            echo 'Pipeline finished.'
-        }
         success {
             mail to: 'asgaurav9@gmail.com',
-                 subject: "Pipeline Succeeded: ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
-                 body: "The pipeline has completed successfully.",
-                 attachLog: true
+                 subject: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                 body: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} was successful."
         }
         failure {
             mail to: 'asgaurav9@gmail.com',
-                 subject: "Pipeline Failed: ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
-                 body: "The pipeline has failed. Please review the logs.",
-                 attachLog: true
+                 subject: "FAILURE: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                 body: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} failed. Check Jenkins for details."
+        }
+        always {
+            echo 'Pipeline completed.'
         }
     }
 }
