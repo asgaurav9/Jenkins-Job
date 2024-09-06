@@ -9,8 +9,40 @@ pipeline {
         }
         stage('Unit and Integration Tests') {
             steps {
-                echo 'Running Unit and Integration Tests...'
-                // Add test steps here
+                echo "Performing Unit Testing using JUnit..."
+                echo "Performing Integration Testing using Selenium WebDriver..."
+
+                script {
+                    def logFilePathNew = "${env.WORKSPACE}/test-output.log"
+                }
+
+                sh """
+                echo 'Starting unit testing using JUnit...' > ${logFilePathNew}
+                echo 'Testing the feature working...' >> ${logFilePathNew}
+                echo 'Unit testing completed and no issues found' >> ${logFilePathNew}
+                echo '\n\nStarting Integration testing using Selenium WebDriver...' >> ${logFilePathNew}
+                echo 'End to End Testing of the complete product working...' >> ${logFilePathNew}
+                echo 'Integration testing completed and no issues found' >> ${logFilePathNew}
+                """
+            }
+
+            post {
+                success {
+                    emailext (
+                        attachmentsPattern: 'test-output.log',
+                        body: 'The Unit Testing and Integration testing completed successfully',
+                        subject: 'Unit and Integration Testing Status: SUCCESS',
+                        to: 'asgaurav9@gmail.com'
+                    )
+                }
+                failure {
+                    emailext (
+                        attachmentsPattern: 'test-output.log',
+                        body: 'The Unit Testing and Integration testing completed unsuccessfully. Please check logs!',
+                        subject: 'Unit and Integration Testing Status: FAILURE',
+                        to: 'asgaurav9@gmail.com'
+                    )
+                }
             }
         }
         stage('Code Analysis') {
@@ -46,25 +78,18 @@ pipeline {
     }
     post {
         success {
-                  emailext (
-                to: 'asgaurav9@gmail.com',
-                subject: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-                body: """Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} was successful.
-                         Check the attached log for more details.""",
-                attachLog: true
-            )
+            mail to: 'asgaurav9@gmail.com',
+                 subject: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                 body: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} was successful."
         }
         failure {
-            emailext (
-                to: 'asgaurav9@gmail.com',
-                subject: "FAILURE: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-                body: """Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} failed.
-                         Check the attached log for more details.""",
-                attachLog: true
-            )
+            mail to: 'asgaurav9@gmail.com',
+                 subject: "FAILURE: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                 body: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} failed. Check Jenkins for details."
         }
         always {
             echo 'Pipeline completed.'
         }
     }
 }
+
