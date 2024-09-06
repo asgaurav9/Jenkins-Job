@@ -20,12 +20,6 @@ pipeline {
                             to: "asgaurav9@gmail.com"
                     }
                 }
-                // failure {
-                    // emailext subject: "Test Failure",
-                        // body: "The tests have failed. Please check the logs for details.",
-                        // to: "asgaurav9@gmail.com",
-                        // attachLog: true
-                // }
             }
         }
         stage('Code Analysis') {
@@ -45,28 +39,43 @@ pipeline {
                             to: "asgaurav9@gmail.com"
                     }
                 }
-                // failure {
-                    // emailext subject: "Security Scan Failure",
-                        // body: "The Security Scans have failed. Please check the logs for details.",
-                        // to: "asgaurav9@gmail.com",
-                        // attachLog: true
-                // }
             }
         }
         stage('Deploy to Staging') {
             steps {
-                echo 'Deploy in dev server in EC2'
+                echo 'Deploying to the development server in EC2'
+                // Example shell command to deploy to EC2 (you can replace it with your actual deployment script)
+                sh 'ssh ec2-user@dev-server "deploy-script.sh"'
             }
         }
         stage('Integration Tests on Staging') {
             steps {
-                echo 'Integration tests on the staging environment'
+                echo 'Running integration tests on the staging environment'
             }
         }
         stage('Deploy to Production') {
             steps {
-                echo 'Deploy in production server in EC2'
+                echo 'Deploying to the production server in EC2'
+                // Example shell command to deploy to EC2 (replace it with your actual production deployment script)
+                sh 'ssh ec2-user@prod-server "deploy-script.sh"'
             }
         }
     }
 }
+post {
+        success {
+            mail to: 'asgaurav9@gmail.com',
+                 subject: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                 body: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} was successful."
+        }
+        failure {
+            mail to: 'asgaurav9@gmail.com',
+                 subject: "FAILURE: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                 body: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} failed. Check Jenkins for details."
+        }
+        always {
+            echo 'Pipeline completed.'
+        }
+    }
+}
+
