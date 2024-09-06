@@ -43,9 +43,7 @@ pipeline {
         }
         stage('Deploy to Staging') {
             steps {
-                echo 'Deploying to the development server in EC2'
-                // Example shell command to deploy to EC2 (you can replace it with your actual deployment script)
-                sh 'ssh ec2-user@dev-server "deploy-script.sh"'
+                echo 'Deploying to Staging...'
             }
         }
         stage('Integration Tests on Staging') {
@@ -55,9 +53,7 @@ pipeline {
         }
         stage('Deploy to Production') {
             steps {
-                echo 'Deploying to the production server in EC2'
-                // Example shell command to deploy to EC2 (replace it with your actual production deployment script)
-                sh 'ssh ec2-user@prod-server "deploy-script.sh"'
+                echo 'Deploying to the production...'
             }
         }
     }
