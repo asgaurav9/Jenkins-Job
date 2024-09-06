@@ -1,44 +1,62 @@
 pipeline {
     agent any
     stages {
+        // Build Stage
         stage('Build') {
             steps {
-                echo 'Building the application...'
-                // Add your build steps here (e.g., Maven/Gradle build command)
-                sh 'echo "Build successful!"'
-            }
-        }
-        
-        stage('Unit and Integration Tests') {
-            steps {
-                echo "Performing Unit Testing using JUnit..."
-                echo "Performing Integration Testing using Selenium WebDriver..."
-
                 script {
-                    // Define the path to store test output logs
-                    def logFilePathNew = "${env.WORKSPACE}/test-output.log"
-                    
-                    // Run shell commands for unit and integration testing
-                    sh """
-                    echo 'Starting unit testing using JUnit...' > ${logFilePathNew}
-                    echo 'Testing the feature working...' >> ${logFilePathNew}
-                    echo 'Unit testing completed and no issues found' >> ${logFilePathNew}
-                    echo '\\n\\nStarting Integration testing using Selenium WebDriver...' >> ${logFilePathNew}
-                    echo 'End to End Testing of the complete product working...' >> ${logFilePathNew}
-                    echo 'Integration testing completed and no issues found' >> ${logFilePathNew}
-                    """
+                    def buildLogPath = "${env.WORKSPACE}/build-output.log"
                 }
+
+                sh """
+                echo 'Starting the build process...' > ${buildLogPath}
+                echo 'Compiling source code...' >> ${buildLogPath}
+                # Example build step: If using Maven, run the Maven build command
+                echo 'Running Maven build...' >> ${buildLogPath}
+                mvn clean install >> ${buildLogPath}
+                echo 'Build completed successfully!' >> ${buildLogPath}
+                """
             }
             post {
                 success {
-                    // Send email notification on successful test completion
+                    emailext attachmentsPattern: 'build-output.log',
+                             body: 'Build completed successfully. Please find the attached log.',
+                             subject: 'Build Status: SUCCESS',
+                             to: 'asgaurav9@gmail.com'
+                }
+                failure {
+                    emailext attachmentsPattern: 'build-output.log',
+                             body: 'Build failed. Please check the attached log for details.',
+                             subject: 'Build Status: FAILURE',
+                             to: 'asgaurav9@gmail.com'
+                }
+            }
+        }
+
+        // Unit and Integration Tests Stage
+        stage('Unit and Integration Tests') {
+            steps {
+                script {
+                    def logFilePathNew = "${env.WORKSPACE}/test-output.log"
+                }
+
+                sh """
+                echo 'Starting unit testing using JUnit...' > ${logFilePathNew}
+                echo 'Testing the feature working...' >> ${logFilePathNew}
+                echo 'Unit testing completed and no issues found' >> ${logFilePathNew}
+                echo '\\n\\nStarting Integration testing using Selenium WebDriver...' >> ${logFilePathNew}
+                echo 'End to End Testing of the complete product working...' >> ${logFilePathNew}
+                echo 'Integration testing completed and no issues found' >> ${logFilePathNew}
+                """
+            }
+            post {
+                success {
                     emailext attachmentsPattern: 'test-output.log',
                              body: 'The Unit Testing and Integration testing completed successfully',
                              subject: 'Unit and Integration Testing Status: SUCCESS',
                              to: 'asgaurav9@gmail.com'
                 }
                 failure {
-                    // Send email notification on test failure
                     emailext attachmentsPattern: 'test-output.log',
                              body: 'The Unit Testing and Integration testing completed unsuccessfully. Please check logs!',
                              subject: 'Unit and Integration Testing Status: FAILURE',
@@ -47,6 +65,7 @@ pipeline {
             }
         }
 
+        // Code Analysis Stage
         stage('Code Analysis') {
             steps {
                 echo 'Running static code analysis...'
@@ -55,6 +74,7 @@ pipeline {
             }
         }
 
+        // Security Scan Stage
         stage('Security Scan') {
             steps {
                 echo 'Performing security scan...'
@@ -71,6 +91,7 @@ pipeline {
             }
         }
 
+        // Deploy to Staging Stage
         stage('Deploy to Staging') {
             steps {
                 echo 'Deploying to staging environment...'
@@ -79,6 +100,7 @@ pipeline {
             }
         }
 
+        // Integration Tests on Staging Stage
         stage('Integration Tests on Staging') {
             steps {
                 echo 'Running Integration Tests on Staging...'
@@ -101,6 +123,7 @@ pipeline {
             }
         }
 
+        // Deploy to Production Stage
         stage('Deploy to Production') {
             steps {
                 echo 'Deploying to production environment...'
