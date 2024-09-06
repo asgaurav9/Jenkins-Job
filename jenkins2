@@ -1,72 +1,70 @@
 pipeline {
     agent any
-    
     stages {
         stage('Build') {
             steps {
-                echo 'Building the code using Gradle'
+                echo 'Building...'
+                // Add build steps here
             }
         }
         stage('Unit and Integration Tests') {
             steps {
-                echo 'Unit Tests using TestComplete'
-                echo 'Integration Tests using TestComplete'
-            }
-            post {
-                always {
-                    script {
-                        emailext attachLog: true, subject: "Test Results",
-                            body: "The tests have completed. Please check the logs for details.",
-                            to: "asgaurav9@gmail.com"
-                    }
-                }
-                // failure {
-                    // emailext subject: "Test Failure",
-                        // body: "The tests have failed. Please check the logs for details.",
-                        // to: "asgaurav9@gmail.com",
-                        // attachLog: true
-                // }
+                echo 'Running Unit and Integration Tests...'
+                // Add test steps here
             }
         }
         stage('Code Analysis') {
             steps {
-                echo 'Code analysis using FindBugs'
+                echo 'Analyzing Code...'
+                // Add code analysis steps here
             }
         }
         stage('Security Scan') {
             steps {
-                echo 'Code security check using Flawnter'
-            }
-            post {
-                always {
-                    script{
-                        emailext attachLog: true, subject: "Security Scan Results",
-                            body: "The Security Scans have completed. Please check the logs for details.",
-                            to: "asgaurav9@gmail.com"
-                    }
-                }
-                // failure {
-                    // emailext subject: "Security Scan Failure",
-                        // body: "The Security Scans have failed. Please check the logs for details.",
-                        // to: "asgaurav9@gmail.com",
-                        // attachLog: true
-                // }
+                echo 'Performing Security Scan...'
+                // Add security scan steps here
             }
         }
         stage('Deploy to Staging') {
             steps {
-                echo 'Deploy in dev server in EC2'
+                echo 'Deploying to Staging...'
+                // Add deployment steps here
             }
         }
         stage('Integration Tests on Staging') {
             steps {
-                echo 'Integration tests on the staging environment'
+                echo 'Running Integration Tests on Staging...'
+                // Add integration test steps here
             }
         }
         stage('Deploy to Production') {
             steps {
-                echo 'Deploy in production server in EC2'
+                echo 'Deploying to Production...'
+                // Add production deployment steps here
             }
-        }
-    }
+        }
+    }
+    post {
+        success {
+            emailext (
+                to: 'asgaurav9@gmail.com',
+                subject: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                body: """<p>Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} was successful.</p>
+                         <p>Check the attached log for more details.</p>""",
+                attachLog: true
+            )
+        }
+        failure {
+            emailext (
+                to: 'asgaurav9@gmail.com',
+                subject: "FAILURE: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                body: """<p>Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} failed.</p>
+                         <p>Check the attached log for more details.</p>""",
+                attachLog: true
+            )
+        }
+        always {
+            echo 'Pipeline completed.'
+        }
+    }
 }
