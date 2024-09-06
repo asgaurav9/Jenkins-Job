@@ -1,69 +1,59 @@
 pipeline {
     agent any
-
     stages {
         stage('Build') {
             steps {
-                echo 'Building the code...'
-                // Use Maven to build the code
-                sh 'mvn clean install'  // Replace with your actual build command
+                echo 'Building...'
+                // Add build steps here
             }
         }
-        
         stage('Unit and Integration Tests') {
             steps {
-                echo 'Running unit tests...'
-                echo 'Running integration tests...'
-                // Add your testing commands here
+                echo 'Running Unit and Integration Tests...'
+                // Add test steps here
             }
         }
-        
         stage('Code Analysis') {
             steps {
-                echo 'Running code analysis...'
-                // Add your code analysis commands here, like SonarQube
+                echo 'Analyzing Code...'
+                // Add code analysis steps here
             }
         }
-        
         stage('Security Scan') {
             steps {
-                echo 'Performing security scan...'
-                // Add your security scanning tool here, like OWASP Dependency-Check
+                echo 'Performing Security Scan...'
+                // Add security scan steps here
             }
         }
-        
         stage('Deploy to Staging') {
             steps {
-                echo 'Deploying to staging server...'
-                // Add deployment commands to staging here
+                echo 'Deploying to Staging...'
+                // Add deployment steps here
             }
         }
-        
         stage('Integration Tests on Staging') {
             steps {
-                echo 'Running integration tests on staging...'
-                // Add integration tests for staging
+                echo 'Running Integration Tests on Staging...'
+                // Add integration test steps here
             }
         }
-        
         stage('Deploy to Production') {
             steps {
-                echo 'Deploying to production server...'
-                // Add your production deployment commands here
+                echo 'Deploying to Production...'
+                // Add production deployment steps here
             }
         }
     }
-    
     post {
         success {
-            mail to: "asgaurav9@gmail.com",
-                subject: "Build Status: SUCCESS",
-                body: "The build completed successfully!"
+            mail to: 'asgaurav9@gmail.com',
+                 subject: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                 body: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} was successful."
         }
         failure {
-            mail to: "asgaurav9@gmail.com",
-                subject: "Build Status: FAILURE",
-                body: "The build failed. Please check Jenkins logs for details."
+            mail to: 'asgaurav9@gmail.com',
+                 subject: "FAILURE: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                 body: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} failed. Check Jenkins for details."
         }
         always {
             echo 'Pipeline completed.'
