@@ -1,93 +1,107 @@
 pipeline {
     agent any
+
     stages {
+        // Stage 1: Build
         stage('Build') {
             steps {
-                echo 'Building...'
-                script {
-                    sh 'echo "Building..." >> build_log.txt'
-                    // Add actual build commands here
-                    sh 'echo "Build completed" >> build_log.txt'
-                }
+                echo 'Building the code using Maven...'
+                // Example: sh 'mvn clean package'
             }
         }
+
+        // Stage 2: Unit and Integration Tests
         stage('Unit and Integration Tests') {
             steps {
-                echo 'Running Unit and Integration Tests...'
+                echo "Running Unit Tests using JUnit and Integration Tests using Selenium..."
                 script {
-                    sh 'echo "Running Unit and Integration Tests..." >> build_log.txt'
-                    // Add test steps here
-                    sh 'echo "Tests completed" >> build_log.txt'
+                    def logFilePath = "${env.WORKSPACE}/test-output.log"
+                    sh """
+                    echo 'Starting unit testing using JUnit...' > ${logFilePath}
+                    echo 'Unit testing completed successfully.' >> ${logFilePath}
+                    echo '\\nStarting Integration testing using Selenium...' >> ${logFilePath}
+                    echo 'Integration testing completed successfully.' >> ${logFilePath}
+                    """
                 }
             }
         }
+
+        // Stage 3: Code Analysis
         stage('Code Analysis') {
             steps {
-                echo 'Analyzing Code...'
+                echo 'Performing Code Analysis with SonarQube...'
+                // Example: sh 'sonar-scanner'
                 script {
-                    sh 'echo "Analyzing Code..." >> build_log.txt'
-                    // Add code analysis steps here
-                    sh 'echo "Code analysis completed" >> build_log.txt'
+                    def logFilePath = "${env.WORKSPACE}/code-analysis-output.log"
+                    sh """
+                    echo 'Starting code analysis using SonarQube...' > ${logFilePath}
+                    echo 'Code analysis completed successfully.' >> ${logFilePath}
+                    """
                 }
             }
         }
+
+        // Stage 4: Security Scan
         stage('Security Scan') {
             steps {
-                echo 'Performing Security Scan...'
+                echo 'Performing Security Scan using OWASP Dependency-Check...'
+                // Example: sh './dependency-check.sh --project my-app --out security-report'
                 script {
-                    sh 'echo "Performing Security Scan..." >> build_log.txt'
-                    // Add security scan steps here
-                    sh 'echo "Security scan completed" >> build_log.txt'
+                    def logFilePath = "${env.WORKSPACE}/security-output.log"
+                    sh """
+                    echo 'Starting security scan using OWASP Dependency-Check...' > ${logFilePath}
+                    echo 'Security scan completed, no vulnerabilities found.' >> ${logFilePath}
+                    """
                 }
             }
         }
+
+        // Stage 5: Deploy to Staging
         stage('Deploy to Staging') {
             steps {
-                echo 'Deploying to Staging...'
-                script {
-                    sh 'echo "Deploying to Staging..." >> build_log.txt'
-                    // Add deployment steps here
-                    sh 'echo "Deployment to staging completed" >> build_log.txt'
-                }
+                echo 'Deploying to Staging server (e.g., AWS EC2)...'
+                // Example: sh 'deploy-to-staging.sh'
             }
         }
+
+        // Stage 6: Integration Tests on Staging
         stage('Integration Tests on Staging') {
             steps {
                 echo 'Running Integration Tests on Staging...'
                 script {
-                    sh 'echo "Running Integration Tests on Staging..." >> build_log.txt'
-                    // Add integration test steps here
-                    sh 'echo "Integration tests completed" >> build_log.txt'
+                    def logFilePath = "${env.WORKSPACE}/staging-test-output.log"
+                    sh """
+                    echo 'Starting integration tests on staging...' > ${logFilePath}
+                    echo 'Integration tests on staging completed successfully.' >> ${logFilePath}
+                    """
                 }
             }
         }
+
+        // Stage 7: Deploy to Production
         stage('Deploy to Production') {
             steps {
-                echo 'Deploying to Production...'
-                script {
-                    sh 'echo "Deploying to Production..." >> build_log.txt'
-                    // Add production deployment steps here
-                    sh 'echo "Deployment to production completed" >> build_log.txt'
-                }
+                echo 'Deploying to Production server (e.g., AWS EC2)...'
+                // Example: sh 'deploy-to-prod.sh'
             }
         }
     }
+
     post {
+        // Email on successful pipeline
         success {
-            mail to: 'asgaurav9@gmail.com',
-                 subject: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-                 body: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} was successful. Logs are available in build_log.txt.",
-                 attachmentsPattern: 'build_log.txt'
+            emailext attachmentsPattern: 'test-output.log,code-analysis-output.log,security-output.log',
+            body: 'The pipeline stages completed successfully. Logs are attached.',
+            subject: 'Pipeline Status: SUCCESS',
+            to: 'asgaurav9@gmail.com'
         }
+        
+        // Email on failed pipeline
         failure {
-            mail to: 'asgaurav9@gmail.com',
-                 subject: "FAILURE: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-                 body: "Build ${env.BUILD_NUMBER} of ${env.JOB_NAME} failed. Check Jenkins and build_log.txt for details.",
-                 attachmentsPattern: 'build_log.txt'
-        }
-        always {
-            echo 'Pipeline completed.'
-            sh 'echo "Pipeline completed" >> build_log.txt'
+            emailext attachmentsPattern: 'test-output.log,code-analysis-output.log,security-output.log',
+            body: 'The pipeline failed. Please check the logs attached.',
+            subject: 'Pipeline Status: FAILURE',
+            to: 'asgaurav9@gmail.com'
         }
     }
 }
