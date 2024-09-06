@@ -1,70 +1,62 @@
 pipeline {
     agent any
+
     stages {
         stage('Build') {
             steps {
-                echo 'Building...'
-                // Add build steps here
+                echo 'Building the code...'
+                // Tool: Maven
             }
         }
+        
         stage('Unit and Integration Tests') {
             steps {
-                echo 'Running Unit and Integration Tests...'
-                // Add test steps here
+                echo 'Running unit tests...'
+                echo 'Running integration tests...'
             }
         }
+        
         stage('Code Analysis') {
             steps {
-                echo 'Analyzing Code...'
-                // Add code analysis steps here
+                echo 'Running code analysis...'
             }
         }
+        
         stage('Security Scan') {
             steps {
-                echo 'Performing Security Scan...'
-                // Add security scan steps here
+                echo 'Performing security scan...'
             }
         }
+        
         stage('Deploy to Staging') {
             steps {
-                echo 'Deploying to Staging...'
-                // Add deployment steps here
+                echo 'Deploying to staging server...'
             }
         }
+        
         stage('Integration Tests on Staging') {
             steps {
-                echo 'Running Integration Tests on Staging...'
-                // Add integration test steps here
+                echo 'Running integration tests on staging...'
             }
         }
+        
         stage('Deploy to Production') {
             steps {
-                echo 'Deploying to Production...'
-                // Add production deployment steps here
+                echo 'Deploying to production server...'
             }
         }
     }
-
+    
     post {
         success {
-            emailext (
-                attachmentsPattern: 'test-output.log',
-                body: 'The Unit Testing and Integration testing completed successfully',
-                subject: 'Unit and Integration Testing Status: SUCCESS',
-                to: 'asgaurav9@gmail.com'
-            )
+            mail to: "asgaurav9@gmail.com",
+                subject: "Build Status Email",
+                body: "Build was successfull!"
         }
         failure {
-            emailext (
-                attachmentsPattern: 'test-output.log',
-                body: 'The Unit Testing and Integration testing completed unsuccessfully. Please check logs!',
-                subject: 'Unit and Integration Testing Status: FAILURE',
-                to: 'asgaurav9@gmail.com'
-            )
-        }
-        always {
-            echo 'Pipeline completed.'
-        }
-    }
+            mail to: "asgaurav9@gmail.com",
+                subject: "Build Status Email",
+                body: "Build was Failure!"
+        }
+    }
 }
-
