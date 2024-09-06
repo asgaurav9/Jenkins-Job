@@ -57,7 +57,6 @@ pipeline {
             }
         }
     }
-}
 post {
         success {
             mail to: 'asgaurav9@gmail.com',
@@ -73,3 +72,4 @@ post {
             echo 'Pipeline completed.'
         }
     }
+}
