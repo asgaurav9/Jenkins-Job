@@ -14,18 +14,18 @@ pipeline {
 
                 script {
                     def logFilePathNew = "${env.WORKSPACE}/test-output.log"
+                    
+                    // Writing logs to the file
+                    sh """
+                    echo 'Starting unit testing using JUnit...' > ${logFilePathNew}
+                    echo 'Testing the feature working...' >> ${logFilePathNew}
+                    echo 'Unit testing completed and no issues found' >> ${logFilePathNew}
+                    echo '\n\nStarting Integration testing using Selenium WebDriver...' >> ${logFilePathNew}
+                    echo 'End to End Testing of the complete product working...' >> ${logFilePathNew}
+                    echo 'Integration testing completed and no issues found' >> ${logFilePathNew}
+                    """
                 }
-
-                sh """
-                echo 'Starting unit testing using JUnit...' > ${logFilePathNew}
-                echo 'Testing the feature working...' >> ${logFilePathNew}
-                echo 'Unit testing completed and no issues found' >> ${logFilePathNew}
-                echo '\n\nStarting Integration testing using Selenium WebDriver...' >> ${logFilePathNew}
-                echo 'End to End Testing of the complete product working...' >> ${logFilePathNew}
-                echo 'Integration testing completed and no issues found' >> ${logFilePathNew}
-                """
             }
-
             post {
                 success {
                     emailext (
@@ -92,4 +92,3 @@ pipeline {
         }
     }
 }
-
